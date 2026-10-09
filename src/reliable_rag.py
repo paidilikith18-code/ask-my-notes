@@ -22,10 +22,11 @@ embeddings = OpenAIEmbeddings(
 )
 
 vector_store = FAISS.load_local(
-    "faiss_index",
+    str(INDEX_DIR),
     embeddings,
     allow_dangerous_deserialization=True,
 )
+
 
 # 2. Configure the language model
 llm = ChatOpenAI(
