@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask My Notes</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      color: #1f2937;
+    }
+
+    .app {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 24px;
+    }
+
+    header { margin-bottom: 24px; }
+
+    header h1 {
+      margin-bottom: 8px;
+      color: #4338ca;
+    }
+
+    header p { color: #64748b; }
+
+    #chat {
+      min-height: 320px;
+      max-height: 55vh;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .message {
+      margin-bottom: 18px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.6;
+    }
+
+    .user { color: #4338ca; }
+    .assistant { color: #1f2937; }
+
+    .sources {
+      margin-top: 6px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 14px 20px;
+      background: #4338ca;
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: 0.6; cursor: wait; }
+
+    #status {
+      min-height: 24px;
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .app { margin: 10px auto; padding: 14px; }
+      form { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header>
+      <h1>Ask My Notes</h1>
+      <p>Ask questions and explore answers from your personal notes.</p>
+    </header>
+
+    <section id="chat" aria-live="polite">
+      <div class="message assistant">
+        <strong>Assistant</strong>
+        <div>Hi! Ask me something from your notes.</div>
+      </div>
+    </section>
+
+    <form id="question-form">
+      <input
+        id="question"
+        type="text"
+        placeholder="Ask a question..."
+        maxlength="1000"
+        required
+        autocomplete="off"
+      >
+      <button id="send-button" type="submit">Ask</button>
+    </form>
+
+    <div id="status" role="status"></div>
+  </main>
+
+  <script>
+    const form = document.getElementById("question-form");
+    const input = document.getElementById("question");
+    const chat = document.getElementById("chat");
+    const button = document.getElementById("send-button");
+    const status = document.getElementById("status");
+
+    function addMessage(role, text, sources = []) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${role}`;
+
+      const heading = document.createElement("strong");
+      heading.textContent =
+        role === "user" ? "You" : "Assistant";
+
+      const content = document.createElement("div");
+      content.textContent = text;
+
+      wrapper.append(heading, content);
+
+      if (sources.length > 0) {
+        const sourceList = document.createElement("div");
+        sourceList.className = "sources";
+        sourceList.textContent =
+          "Sources: " + sources.join(", ");
+        wrapper.appendChild(sourceList);
+      }
+
+      chat.appendChild(wrapper);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const question = input.value.trim();
+      if (!question) return;
+
+      addMessage("user", question);
+      input.value = "";
+      button.disabled = true;
+      status.textContent = "Searching your notes...";
+
+      try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ question })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.detail || "The request failed."
+          );
+        }
+
+        addMessage(
+          "assistant",
+          result.answer,
+          result.sources || []
+        );
+
+        status.textContent = "";
+      } catch (error) {
+        status.textContent =
+          "Could not get an answer. Check that the API is running.";
+        console.error(error);
+      } finally {
+        button.disabled = false;
+        input.focus();
+      }
+    });
+  </script>
+</body>
+</html>

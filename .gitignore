@@ -1,0 +1,25 @@
+# Secrets
+
+.env
+.env.*
+
+# Python environment and cache
+
+.venv/
+venv/
+**pycache**/
+*.py[cod]
+
+# macOS
+
+.DS_Store
+
+# Generated files
+
+faiss_index/
+answer_quality_report.json
+evaluation_report.csv
+
+# Private documents
+
+data/notes/
