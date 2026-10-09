@@ -1,0 +1,16 @@
+Python
+
+Python is a high-level programming language known for its simple syntax.
+
+Python is widely used in artificial intelligence, machine learning,
+data science, web development and automation.
+
+Important Python data structures include lists, tuples, dictionaries and sets.
+
+Python is a high-level programming language.
+
+Python is commonly used for artificial intelligence,
+machine learning, data science, automation and web development.
+
+Python provides built-in data structures such as lists,
+tuples, dictionaries and sets.

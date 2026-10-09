@@ -20,6 +20,3 @@ faiss_index/
 answer_quality_report.json
 evaluation_report.csv
 
-# Private documents
-
-data/notes/

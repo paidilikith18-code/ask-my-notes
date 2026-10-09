@@ -1,0 +1,12 @@
+Artificial Intelligence
+
+Artificial Intelligence is the field of building systems that can perform tasks
+that normally require human intelligence.
+
+Machine learning is a subset of artificial intelligence where systems learn
+patterns from data.
+
+Deep learning is a subset of machine learning that uses neural networks with
+multiple layers.
+
+Large language models can process and generate human-like text.
